@@ -19,17 +19,19 @@ def login():
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('views.index'))
+                return redirect(url_for('views.home'))
             else:
                 flash('Incorect password!', category='error')
         else:
             flash('Email does not exist', category='error')
-    return render_template('login.html')
+    return render_template('login.html', user=current_user)
 
 
 @auth.route('/logout')
+@login_required
 def logout():
-    return '<p>Logout</p>'
+    logout_user()
+    return redirect(url_for('auth.login'))
 
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
@@ -58,5 +60,5 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
             flash('Account created', category='success')
-            return redirect(url_for('views.index'))
-    return render_template('sign-up.html')
+            return redirect(url_for('views.home'))
+    return render_template('sign-up.html', user=current_user)
